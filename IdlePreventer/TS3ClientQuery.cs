@@ -10,6 +10,7 @@ using System.IO;
 using System.Text;
 using System.Runtime.Remoting;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace IdlePreventer
 {
@@ -62,11 +63,21 @@ namespace IdlePreventer
 			catch (SocketException ex)
 			{
 				MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery.";
+				if(getMyClientCan != null)
+					getMyClientCan.Cancel();
 				tsPluginConnected = false;
+				return;
 			}
 
+
 			string response = await SendMessageAsync("auth apikey=" + APIkey);
-			Debug.WriteLine("auth response =>" + response + "<=");
+			if(response == "Exception -2146232800" || response == "stream is null")
+			{
+				MW.connectionStatusLabel.Text = "not connected; Could not connect to TS3ClientQuery";
+				if (getMyClientCan != null)
+					getMyClientCan.Cancel();
+				return;
+			}
 			response = response.Remove(0, response.IndexOf("See \"help auth\" for details.") + "See \"help auth\" for details.".Length);
 			IDictionary<string,string> serResponse = SerializeResponse(response);
 			if (serResponse["msg"] == "invalid\\sparameter")
@@ -77,7 +88,8 @@ namespace IdlePreventer
 				{
 					Properties.Settings.Default["APIkey"] = MW.apiKeyTextBox.Text;
 					Properties.Settings.Default.Save();
-					await GetMyConnectionInfoAsync();
+					getMyClientCan = new CancellationTokenSource();
+					await GetMyConnectionInfoAsync(getMyClientCan.Token);
 				}
 				catch(Exception ex)
 				{
@@ -135,7 +147,13 @@ namespace IdlePreventer
 			try
 			{
 				Byte[] data = ASCIIEncoding.ASCII.GetBytes(message + "\n");
-				await stream.WriteAsync(data, 0, data.Length);
+				if (stream != null)
+					await stream.WriteAsync(data, 0, data.Length);
+				else
+				{
+					MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery.";
+					return "stream is null";
+				}
 				MW.connectionStatusLabel.Text = "Sent:\n" + message;
 
 
@@ -157,30 +175,32 @@ namespace IdlePreventer
 				tsPluginConnected = true;
 				return response;
 			}
-			catch (ArgumentNullException exc) { MW.connectionStatusLabel.Text = "ArgumentNull Exception: " + exc; return exc.ToString(); }
-			catch (SocketException exc) { MW.connectionStatusLabel.Text = "Socket Exception: " + exc; return exc.ToString(); }
-			catch (IOException exc)
+			catch (ArgumentNullException ex) { MW.connectionStatusLabel.Text = "ArgumentNull Exception: " + ex.Message; return ex.HResult.ToString();  }
+			catch (SocketException ex) { MW.connectionStatusLabel.Text = "Socket Exception: " + ex.Message; return ex.HResult.ToString(); }
+			catch (IOException ex)
 			{
-				if (exc.Message == "Unable to read data from the transport connection: An established connection was aborted by the software in your host machine.")
+				if (ex.Message == "Unable to read data from the transport connection: An established connection was aborted by the software in your host machine.")
 				{
 					MW.connectionStatusLabel.Text = "not connected;\nLost connection to TS3ClientQuery";
 					tsPluginConnected = false;
-					return "Exception " + exc.HResult;
+					return "Exception " + ex.HResult;
 				}
-				else if (exc.Message == "Unable to write data to the transport connection: An established connection was aborted by the software in your host machine.")
+				else if (ex.Message == "Unable to write data to the transport connection: An established connection was aborted by the software in your host machine.")
 				{
 					MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery";
 					tsPluginConnected = false;
-					return "Exception " + exc.HResult;
+					return "Exception " +ex.HResult;
 				}
 				else
 				{
-					MW.connectionStatusLabel.Text = "Socket Exception:\n" + exc;
-					return "Exception " + exc.HResult;
+					MW.connectionStatusLabel.Text = "Socket Exception:\n" + ex;
+					return "Exception " + ex.HResult;
 				}
 
 			}
-			catch (Exception exc) { MW.connectionStatusLabel.Text = "Exception:\n" + exc; return exc.Message; }
+			catch(NullReferenceException ex) { MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery."; return ex.HResult.ToString(); }
+			catch(ObjectDisposedException ex) { MW.connectionStatusLabel.Text = "not connected;\nLost connection to TS3ClientQuery."; return ex.HResult.ToString(); }
+			catch (Exception ex) { MW.connectionStatusLabel.Text = "Exception:\n" + ex.Message; Debug.WriteLine("catch(Exception) called => " + ex.ToString()); return ex.HResult.ToString(); }
 		}
 
 		public IDictionary<string, string> SerializeResponse(string response)
@@ -217,13 +237,18 @@ namespace IdlePreventer
 			return result;
 		}
 
-		private bool getClientCalled = false;
-		public async Task GetMyConnectionInfoAsync()
+		public CancellationTokenSource getMyClientCan = null;
+		public async Task GetMyConnectionInfoAsync(CancellationToken token)
 		{
-			getClientCalled = true;
 			try
 			{
 				string response = await SendMessageAsync("whoami");
+				if(response == "Exception -2146232800")
+				{
+					getMyClientCan.Cancel();
+					MW.connectionStatusLabel.Text = "not connected;\nLost connection to TS3ClientQuery.";
+					return;
+				}
 				IDictionary<string, string> serResponse = SerializeResponse(response);
 				tsChannelId = int.Parse(serResponse["cid"]);
 				tsClientId = int.Parse(serResponse["clid"]);
@@ -246,14 +271,13 @@ namespace IdlePreventer
 			}
 			catch (KeyNotFoundException ex)
 			{
-				Debug.WriteLine(ex);
-
-				MW.connectionStatusLabel.Text = "connected\nYou are not connected to any teamspeak server.";
+				if (!token.IsCancellationRequested)
+					MW.connectionStatusLabel.Text = "connected\nYou are not connected to any teamspeak server.";
 				tsServerConnected = false;
 				await Task.Delay(5000);
-				GetMyConnectionInfoAsync();
+				if(!token.IsCancellationRequested)
+					GetMyConnectionInfoAsync(token);
 			}
-			getClientCalled = false;
 		}
 	}
 }

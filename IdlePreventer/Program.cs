@@ -93,7 +93,8 @@ namespace IdlePreventer
 			IDictionary<string, string> serResponse = ts3.SerializeResponse(response);
 			if(serResponse["msg"] == "ok")
 			{
-				ts3.GetMyConnectionInfoAsync();
+				ts3.getMyClientCan = new CancellationTokenSource();
+				ts3.GetMyConnectionInfoAsync(ts3.getMyClientCan.Token);
 			}
 			else if(serResponse["msg"] == "not\\sconnected")
 			{
