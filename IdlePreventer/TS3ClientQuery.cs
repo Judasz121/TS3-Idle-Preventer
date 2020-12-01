@@ -54,7 +54,7 @@ namespace IdlePreventer
 					TcpClient.Close();
 				if (socket != null && socket.Connected)
 					socket.Close();
-				TcpClient = await Task.Run(() => { return new TcpClient(serverIP, serverPort); });
+				TcpClient = await Task.Run(() => { return new TcpClient(serverIP, serverPort) { LingerState = new LingerOption(true, 0 )}; });
 				socket = await Task.Run(() => { return new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp); });
 				stream = TcpClient.GetStream();
 				socket.Connect(serverIP, serverPort);
@@ -98,50 +98,6 @@ namespace IdlePreventer
 			}
 		}
 
-		//public async Task<string> SendMessageAsync2(string message)
-		//{
-		//	try
-		//	{
-		//		Byte[] data = ASCIIEncoding.ASCII.GetBytes(message + "\n");
-		//		await stream.WriteAsync(data, 0, data.Length);
-		//		MW.connectionStatusLabel.Text = "Sent:\n" + message;
-
-		//		data = new byte[1024];
-		//		int bytesAmount = await stream.ReadAsync(data, 0, data.Length);
-		//		string responseData = Encoding.ASCII.GetString(data, 0, bytesAmount);
-		//		MW.connectionStatusLabel.Text = "Recieved:\n" + responseData;
-
-		//		tsPluginConnected = true;
-		//		return responseData;
-		//	}
-		//	catch (ArgumentNullException exc) { MW.connectionStatusLabel.Text = "ArgumentNull Exception: " + exc; return exc.ToString(); }
-		//	catch (SocketException exc) { MW.connectionStatusLabel.Text = "Socket Exception: " + exc; return exc.ToString(); }
-		//	catch (IOException exc)
-		//	{
-
-		//		Debug.WriteLine("socket exc to debug ->" + exc.Message + "<- socket exc to debug end");
-		//		if (exc.Message == "Unable to read data from the transport connection: An established connection was aborted by the software in your host machine.")
-		//		{
-		//			MW.connectionStatusLabel.Text = "not connected;\nLost connection to TS3ClientQuery";
-		//			tsPluginConnected = false;
-		//			return exc.ToString();
-		//		}
-		//		else if (exc.Message == "Unable to write data to the transport connection: An established connection was aborted by the software in your host machine.")
-		//		{
-		//			MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery";
-		//			tsPluginConnected = false;
-		//			return exc.ToString();
-		//		}
-		//		else
-		//		{
-		//			MW.connectionStatusLabel.Text = "Socket Exception:\n" + exc;
-		//			return exc.ToString();
-		//		}
-
-		//	}
-		//	catch (Exception exc) { MW.connectionStatusLabel.Text = "Exception:\n" + exc; return exc.ToString(); }
-		//}
-
 		public async Task<string> SendMessageAsync(string message)
 		{
 			try
@@ -151,11 +107,10 @@ namespace IdlePreventer
 					await stream.WriteAsync(data, 0, data.Length);
 				else
 				{
-					MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery.";
+					MW.connectionStatusLabel.Text = "not connected;\nNot connected to TS3ClientQuery.";
 					return "stream is null";
 				}
 				MW.connectionStatusLabel.Text = "Sent:\n" + message;
-
 
 				data = new byte[1];
 				int bytesAmount;
