@@ -32,11 +32,10 @@ namespace IdlePreventer
 
 
 
-		public static async Task nicknameChangeLoopAsync(TimeSpan loopInterval, CancellationToken canToken)
+		public static async Task nicknameChangeLoopAsync(TimeSpan loopInterval, CancellationToken canToken, string addString = ".")
 		{
-			string addString = ".";
 			string response = string.Empty;
-			if (ts3.tsClientNickname.IndexOf(addString) == -1)
+			if (ts3.tsClientNickname.LastIndexOf(addString) == -1)
 			{
 				response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				if (response.Contains("Exception"))
@@ -53,7 +52,7 @@ namespace IdlePreventer
 				ts3.tsClientNickname = ts3.tsClientNickname + addString;
 				response = await ts3.SendMessageAsync("clientupdate client_nickname=" + ts3.tsClientNickname);
 			}
-			else if (ts3.tsClientNickname.IndexOf(addString) == ts3.tsClientNickname.Length - 1)
+			else if (ts3.tsClientNickname.LastIndexOf(addString) == ts3.tsClientNickname.Length - 1)
 			{
 				response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				if (response.Contains("Exception"))
@@ -98,7 +97,10 @@ namespace IdlePreventer
 			}
 			else if(serResponse["msg"] == "not\\sconnected")
 			{
-				ts3.SendMessageAsync("connect address=" + ts3.tsServerIp + " channel=" + ts3.tsChannelPath + " nickname=" + ts3.tsClientNickname);
+				if(ts3.tsServerPassword != null && ts3.tsServerPassword != "")
+					ts3.SendMessageAsync("connect address=" + ts3.tsServerIp + " password=" + ts3.tsServerPassword + " channel=" + ts3.tsChannelPath + " nickname=" + ts3.tsClientNickname);
+				else
+					ts3.SendMessageAsync("connect address=" + ts3.tsServerIp + " channel=" + ts3.tsChannelPath + " nickname=" + ts3.tsClientNickname);
 			}
 
 			await Task.Delay(loopInterval, canToken);
@@ -106,24 +108,6 @@ namespace IdlePreventer
 				reconnectLoopAsync(loopInterval, canToken);
 			else
 				return;
-		}
-
-		private static bool blinkButtonCalled = false;
-		public static async Task BlinkButton(Button button, int blinksAmount, int blinkLength, Color blinkColor)
-		{
-			if (blinkButtonCalled == false)
-			{
-				blinkButtonCalled = true;
-				Color defaultColor = button.BackColor;
-				for (int i = 0; blinksAmount > i; i++)
-				{
-					button.BackColor = blinkColor;
-					await Task.Delay(blinkLength / 2);
-					button.BackColor = defaultColor;
-					await Task.Delay(blinkLength / 2);
-				}
-				blinkButtonCalled = false;
-			}
 		}
 
 	}

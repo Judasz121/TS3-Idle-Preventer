@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace IdlePreventer
@@ -62,7 +63,7 @@ namespace IdlePreventer
 
 					if (Program.ts3.tsServerConnected == false)
 					{
-						Program.BlinkButton(connectButton, 2, 500, Color.Yellow);
+						BlinkButton(connectButton, 2, 500, Color.Yellow);
 						return;
 					}
 					applyIdlePreventionButton.Text = "Stop";
@@ -82,7 +83,7 @@ namespace IdlePreventer
 
 					if (Program.ts3.tsServerConnected == false)
 					{
-						Program.BlinkButton(connectButton, 2, 500, Color.Yellow);
+						BlinkButton(connectButton, 2, 500, Color.Yellow);
 						return;
 					}
 					applyIdlePreventionButton.Text = "Stop";
@@ -140,5 +141,25 @@ namespace IdlePreventer
 		}
 		#endregion
 
+		#region animations
+
+		private static bool blinkButtonCalled = false;
+		public static async Task BlinkButton(Button button, int blinksAmount, int blinkLength, Color blinkColor)
+		{
+			if (blinkButtonCalled == false)
+			{
+				blinkButtonCalled = true;
+				Color defaultColor = button.BackColor;
+				for (int i = 0; blinksAmount > i; i++)
+				{
+					button.BackColor = blinkColor;
+					await Task.Delay(blinkLength / 2);
+					button.BackColor = defaultColor;
+					await Task.Delay(blinkLength / 2);
+				}
+				blinkButtonCalled = false;
+			}
+		}
+		#endregion
 	}
 }

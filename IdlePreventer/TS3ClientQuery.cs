@@ -29,6 +29,7 @@ namespace IdlePreventer
 		public bool tsServerConnected = false;
 		public string tsServerIp;
 		public int tsServerPort;
+		public string tsServerPassword;
 		private Form1 MW;
 
 		public TS3ClientQuery(string ip, int port, Form1 window)
@@ -102,9 +103,9 @@ namespace IdlePreventer
 		{
 			try
 			{
-				Byte[] data = ASCIIEncoding.ASCII.GetBytes(message + "\n");
+				Byte[] dataBuffer = ASCIIEncoding.UTF8.GetBytes(message + "\n");
 				if (stream != null)
-					await stream.WriteAsync(data, 0, data.Length);
+					await stream.WriteAsync(dataBuffer, 0, dataBuffer.Length);
 				else
 				{
 					MW.connectionStatusLabel.Text = "not connected;\nNot connected to TS3ClientQuery.";
@@ -112,22 +113,25 @@ namespace IdlePreventer
 				}
 				MW.connectionStatusLabel.Text = "Sent:\n" + message;
 
-				data = new byte[1];
+				dataBuffer = new byte[1];
 				int bytesAmount;
 				string response;
 				using (MemoryStream ms = new MemoryStream())
 				{
 					do
 					{
-						bytesAmount = await stream.ReadAsync(data, 0, data.Length);
-						ms.Write(data, 0, bytesAmount);
+						bytesAmount = await stream.ReadAsync(dataBuffer, 0, dataBuffer.Length);
+						ms.Write(dataBuffer, 0, bytesAmount);
 					} while (stream.DataAvailable);
 
-					response = Encoding.ASCII.GetString(ms.ToArray(), 0, (int)ms.Length);
+					response = Encoding.UTF8.GetString(ms.ToArray(), 0, (int)ms.Length);
 				}
 				MW.connectionStatusLabel.Text = "Recieved:\n" + response;
 
 				tsPluginConnected = true;
+				Debug.WriteLine("message sent: " + message);
+				Debug.Write("response: \n");
+				Debug.Write(response);
 				return response;
 			}
 			catch (ArgumentNullException ex) { MW.connectionStatusLabel.Text = "ArgumentNull Exception: " + ex.Message; return ex.HResult.ToString();  }
@@ -220,6 +224,7 @@ namespace IdlePreventer
 				serResponse = SerializeResponse(response);
 				tsServerIp = serResponse["ip"];
 				tsServerPort = int.Parse(serResponse["port"]);
+				tsServerPassword = serResponse["password"];
 				
 				MW.connectionStatusLabel.Text = "connected";
 				tsServerConnected = true;
