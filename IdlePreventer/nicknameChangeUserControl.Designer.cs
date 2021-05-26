@@ -82,6 +82,7 @@
 			this.nicknameChangeCharactersTextBox.TabIndex = 3;
 			this.nicknameChangeCharactersTextBox.Text = ".";
 			this.nicknameChangeCharactersTextBox.Enter += new System.EventHandler(this.nicknameChangeCharactersTextBox_Enter);
+			this.nicknameChangeCharactersTextBox.Leave += new System.EventHandler(this.nicknameChangeCharactersTextBox_Leave);
 			this.nicknameChangeCharactersTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.nicknameChangeCharactersTextBox_MouseDown);
 			// 
 			// nicknameChangeUserControl

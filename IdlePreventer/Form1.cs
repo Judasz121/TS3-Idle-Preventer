@@ -47,6 +47,11 @@ namespace IdlePreventer
 			
 			if (applyIdlePreventionButton.Text == "Apply")
 			{
+				if (Program.ts3.tsServerConnected == false)
+				{
+					BlinkButton(connectButton, 3, 500, Color.Yellow);
+					return;
+				}
 
 				string[] timeString;
 				TimeSpan time = new TimeSpan();
@@ -61,11 +66,6 @@ namespace IdlePreventer
 					else if (timeString[1] == "hours" || timeString[1] == "hour")
 						time = new TimeSpan(0, int.Parse(timeString[0]), 0);
 
-					if (Program.ts3.tsServerConnected == false)
-					{
-						BlinkButton(connectButton, 3, 500, Color.Yellow);
-						return;
-					}
 					applyIdlePreventionButton.Text = "Stop";
 					tokenSource = new CancellationTokenSource();
 					Program.reconnectLoopAsync(time, tokenSource.Token);
@@ -81,11 +81,6 @@ namespace IdlePreventer
 					else if (timeString[1] == "hours" || timeString[1] == "hour")
 						time = new TimeSpan(0, int.Parse(timeString[0]), 0);
 
-					if (Program.ts3.tsServerConnected == false)
-					{
-						BlinkButton(connectButton, 3, 500, Color.Yellow);
-						return;
-					}
 					applyIdlePreventionButton.Text = "Stop";
 					tokenSource = new CancellationTokenSource();
 					Program.nicknameChangeLoopAsync(time, tokenSource.Token, nicknameChangeUserControl1.nicknameChangeCharactersTextBox.Text);

@@ -17,6 +17,7 @@ namespace IdlePreventer
 			InitializeComponent();
 		}
 
+		private bool nicknameChangeCharactersTextBoxAlreadyFocused = false;
 		private void nicknameChangeCharactersTextBox_Enter(object sender, EventArgs e)
 		{
 			nicknameChangeCharactersTextBox.SelectAll();
@@ -24,7 +25,16 @@ namespace IdlePreventer
 
 		private void nicknameChangeCharactersTextBox_MouseDown(object sender, MouseEventArgs e)
 		{
-			nicknameChangeCharactersTextBox.SelectAll();
+			if (!nicknameChangeCharactersTextBoxAlreadyFocused)
+			{
+				nicknameChangeCharactersTextBox.SelectAll();
+				nicknameChangeCharactersTextBoxAlreadyFocused = true;
+			}
+		}
+
+		private void nicknameChangeCharactersTextBox_Leave(object sender, EventArgs e)
+		{
+			nicknameChangeCharactersTextBoxAlreadyFocused = false;
 		}
 	}
 }
