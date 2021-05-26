@@ -81,6 +81,8 @@
 			this.nicknameChangeCharactersTextBox.Size = new System.Drawing.Size(121, 20);
 			this.nicknameChangeCharactersTextBox.TabIndex = 3;
 			this.nicknameChangeCharactersTextBox.Text = ".";
+			this.nicknameChangeCharactersTextBox.Enter += new System.EventHandler(this.nicknameChangeCharactersTextBox_Enter);
+			this.nicknameChangeCharactersTextBox.MouseDown += new System.Windows.Forms.MouseEventHandler(this.nicknameChangeCharactersTextBox_MouseDown);
 			// 
 			// nicknameChangeUserControl
 			// 

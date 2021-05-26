@@ -35,9 +35,6 @@ namespace IdlePreventer
 		public static async Task nicknameChangeLoopAsync(TimeSpan loopInterval, CancellationToken canToken, string addString)
 		{
 			string response = string.Empty;
-			Debug.WriteLine("addString.Length=" + addString.Length);
-			Debug.WriteLine("ts3.ClientNickname.LastIndexOf(addString)=" + ts3.tsClientNickname.LastIndexOf(addString));
-			Debug.WriteLine("ts3.tsClientNickname.Length -1 =" + (ts3.tsClientNickname.Length - 1).ToString());
 			if (ts3.tsClientNickname.LastIndexOf(addString) == -1)
 			{
 				response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
@@ -46,11 +43,17 @@ namespace IdlePreventer
 					await ts3.ConnectAndAuthorizeAsync(Settings.Default.APIkey);
 					response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				}
-				else if (response == "not\\sconnected")
+				else if (response.Contains("not\\sconnected"))
 				{
 					MW.applyIdlePreventionButton.Text = "Apply";
-					Form1.BlinkButton(MW.connectButton, 3, 500, Color.Yellow);
+					MW.connectionStatusLabel.Text = "connected\nLost connection to the server";
+					Form1.BlinkButton(MW.connectButton, 5, 500, Color.Yellow);
 					return;
+				}
+				else if (response.Contains("invalid\\sclientID"))
+				{
+					await ts3.ConnectAndAuthorizeAsync(Settings.Default.APIkey);
+					response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				}
 				ts3.tsClientNickname = ts3.SerializeResponse(response)["client_nickname"];
 				ts3.tsClientNickname = ts3.tsClientNickname + addString;
@@ -64,10 +67,17 @@ namespace IdlePreventer
 					await ts3.ConnectAndAuthorizeAsync(Settings.Default.APIkey);
 					response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				}
-				else if (response == "not\\sconnected")
+				else if (response.Contains("not\\sconnected"))
 				{
 					MW.applyIdlePreventionButton.Text = "Apply";
+					MW.connectionStatusLabel.Text = "connected\nLost connection to the server";
+					Form1.BlinkButton(MW.connectButton, 5, 500, Color.Yellow);
 					return;
+				}
+				else if (response.Contains("invalid\\sclientID"))
+				{
+					await ts3.ConnectAndAuthorizeAsync(Settings.Default.APIkey);
+					response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				}
 				ts3.tsClientNickname = ts3.SerializeResponse(response)["client_nickname"];
 				ts3.tsClientNickname = ts3.tsClientNickname.Remove(ts3.tsClientNickname.LastIndexOf(addString), addString.Length);

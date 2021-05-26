@@ -16,5 +16,15 @@ namespace IdlePreventer
 		{
 			InitializeComponent();
 		}
+
+		private void nicknameChangeCharactersTextBox_Enter(object sender, EventArgs e)
+		{
+			nicknameChangeCharactersTextBox.SelectAll();
+		}
+
+		private void nicknameChangeCharactersTextBox_MouseDown(object sender, MouseEventArgs e)
+		{
+			nicknameChangeCharactersTextBox.SelectAll();
+		}
 	}
 }
