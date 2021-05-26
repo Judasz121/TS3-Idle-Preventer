@@ -47,7 +47,7 @@ namespace IdlePreventer
 			
 			if (applyIdlePreventionButton.Text == "Apply")
 			{
-				if (Program.ts3.tsServerConnected == false)
+				if (Program.ts3.tsServerConnected == false || Program.ts3.tsPluginConnected == false)
 				{
 					BlinkElement(connectButton, 3, 500, Color.Yellow);
 					return;

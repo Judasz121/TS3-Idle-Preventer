@@ -98,24 +98,32 @@ namespace IdlePreventer
 		public static async Task reconnectLoopAsync(TimeSpan loopInterval, CancellationToken canToken)
 		{
 			string response = await ts3.SendMessageAsync("serverconnectinfo");
-			if (response.Contains("Exception"))
+			if (response.Contains("Exception")) 
 			{
 				await ts3.ConnectAndAuthorizeAsync(Settings.Default.APIkey);
 				response = await ts3.SendMessageAsync("serverconnectinfo");
+				if (response.Contains("Exception"))
+				{
+					MW.applyIdlePreventionButton.Text = "Apply";
+					MW.connectionStatusLabel.Text = "not connected;\nLost connection to TS3ClientQueryy";
+					return;
+				}
 			}
 			IDictionary<string, string> serResponse = ts3.SerializeResponse(response);
-			if(serResponse["msg"] == "ok")
+			if (serResponse["msg"] == "ok")
 			{
 				ts3.getMyClientCan = new CancellationTokenSource();
 				ts3.GetMyConnectionInfoAsync(ts3.getMyClientCan.Token);
 			}
-			else if(serResponse["msg"] == "not\\sconnected")
+			else if (serResponse["msg"] == "not\\sconnected")
 			{
-				if(ts3.tsServerPassword != null && ts3.tsServerPassword != "")
+				if (ts3.tsServerPassword != null && ts3.tsServerPassword != "")
 					ts3.SendMessageAsync("connect address=" + ts3.tsServerIp + " password=" + ts3.tsServerPassword + " channel=" + ts3.tsChannelPath + " nickname=" + ts3.tsClientNickname);
 				else
 					ts3.SendMessageAsync("connect address=" + ts3.tsServerIp + " channel=" + ts3.tsChannelPath + " nickname=" + ts3.tsClientNickname);
 			}
+				
+			
 
 			await Task.Delay(loopInterval, canToken);
 			if (!canToken.IsCancellationRequested)

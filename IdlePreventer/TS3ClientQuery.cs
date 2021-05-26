@@ -61,7 +61,7 @@ namespace IdlePreventer
 				socket.Connect(serverIP, serverPort);
 				tsPluginConnected = true;
 			}
-			catch (SocketException ex)
+			catch (SocketException exc)
 			{
 				MW.connectionStatusLabel.Text = "not connected;\nCould not connect to TS3ClientQuery.";
 				if(getMyClientCan != null)
@@ -74,7 +74,7 @@ namespace IdlePreventer
 			string response = await SendMessageAsync("auth apikey=" + APIkey);
 			if(response == "Exception -2146232800" || response == "stream is null")
 			{
-				MW.connectionStatusLabel.Text = "not connected; Could not connect to TS3ClientQuery";
+				MW.connectionStatusLabel.Text = "not connected; Could not connect to TS3ClientQueryy";
 				if (getMyClientCan != null)
 					getMyClientCan.Cancel();
 				return;
