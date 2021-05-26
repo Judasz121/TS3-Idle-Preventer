@@ -47,7 +47,7 @@ namespace IdlePreventer
 				{
 					MW.applyIdlePreventionButton.Text = "Apply";
 					MW.connectionStatusLabel.Text = "connected\nLost connection to the server";
-					Form1.BlinkButton(MW.connectButton, 5, 500, Color.Yellow);
+					Form1.BlinkElement(MW.connectButton, 5, 500, Color.Yellow);
 					return;
 				}
 				else if (response.Contains("invalid\\sclientID"))
@@ -71,7 +71,7 @@ namespace IdlePreventer
 				{
 					MW.applyIdlePreventionButton.Text = "Apply";
 					MW.connectionStatusLabel.Text = "connected\nLost connection to the server";
-					Form1.BlinkButton(MW.connectButton, 5, 500, Color.Yellow);
+					Form1.BlinkElement(MW.connectButton, 5, 500, Color.Yellow);
 					return;
 				}
 				else if (response.Contains("invalid\\sclientID"))

@@ -49,7 +49,7 @@ namespace IdlePreventer
 			{
 				if (Program.ts3.tsServerConnected == false)
 				{
-					BlinkButton(connectButton, 3, 500, Color.Yellow);
+					BlinkElement(connectButton, 3, 500, Color.Yellow);
 					return;
 				}
 
@@ -72,6 +72,11 @@ namespace IdlePreventer
 				}
 				else if (typeOfPreventionComboBox.Text == "nickname change" && nicknameChangeUserControl1.changeNicknameTimeComboBox.Text != string.Empty)
 				{
+					if(nicknameChangeUserControl1.nicknameChangeCharactersTextBox.Text == string.Empty)
+					{
+						BlinkElement(nicknameChangeUserControl1.nicknameChangeCharactersTextBox, 3, 500, Color.Yellow);
+						return;
+					}
 					timeString = nicknameChangeUserControl1.changeNicknameTimeComboBox.Text.Split(' ');
 
 					if (timeString[1] == "seconds" || timeString[1] == "second")
@@ -138,23 +143,23 @@ namespace IdlePreventer
 		}
 		#endregion
 
-		#region animations
+		#region UI_animations
 
-		private static bool blinkButtonCalled = false;
-		public static async Task BlinkButton(Button button, int blinksAmount, int blinkLength, Color blinkColor)
+		private static bool blinkCalled = false;
+		public static async Task BlinkElement(Control target, int blinksAmount, int blinkLength, Color blinkColor)
 		{
-			if (blinkButtonCalled == false)
+			if (blinkCalled == false)
 			{
-				blinkButtonCalled = true;
-				Color defaultColor = button.BackColor;
+				blinkCalled = true;
+				Color defaultColor = target.BackColor;
 				for (int i = 0; blinksAmount > i; i++)
 				{
-					button.BackColor = blinkColor;
+					target.BackColor = blinkColor;
 					await Task.Delay(blinkLength / 2);
-					button.BackColor = defaultColor;
+					target.BackColor = defaultColor;
 					await Task.Delay(blinkLength / 2);
 				}
-				blinkButtonCalled = false;
+				blinkCalled = false;
 			}
 		}
 
