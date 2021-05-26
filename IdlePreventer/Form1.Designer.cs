@@ -151,14 +151,14 @@ namespace IdlePreventer
 			// 
 			this.nicknameChangeUserControl1.Location = new System.Drawing.Point(27, 144);
 			this.nicknameChangeUserControl1.Name = "nicknameChangeUserControl1";
-			this.nicknameChangeUserControl1.Size = new System.Drawing.Size(249, 35);
+			this.nicknameChangeUserControl1.Size = new System.Drawing.Size(249, 73);
 			this.nicknameChangeUserControl1.TabIndex = 8;
 			// 
 			// Form1
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(326, 187);
+			this.ClientSize = new System.Drawing.Size(326, 149);
 			this.Controls.Add(this.applyIdlePreventionButton);
 			this.Controls.Add(this.reconnectUserControl1);
 			this.Controls.Add(this.nicknameChangeUserControl1);

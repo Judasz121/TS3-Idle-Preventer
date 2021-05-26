@@ -32,9 +32,12 @@ namespace IdlePreventer
 
 
 
-		public static async Task nicknameChangeLoopAsync(TimeSpan loopInterval, CancellationToken canToken, string addString = ".")
+		public static async Task nicknameChangeLoopAsync(TimeSpan loopInterval, CancellationToken canToken, string addString)
 		{
 			string response = string.Empty;
+			Debug.WriteLine("addString.Length=" + addString.Length);
+			Debug.WriteLine("ts3.ClientNickname.LastIndexOf(addString)=" + ts3.tsClientNickname.LastIndexOf(addString));
+			Debug.WriteLine("ts3.tsClientNickname.Length -1 =" + (ts3.tsClientNickname.Length - 1).ToString());
 			if (ts3.tsClientNickname.LastIndexOf(addString) == -1)
 			{
 				response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
@@ -46,13 +49,14 @@ namespace IdlePreventer
 				else if (response == "not\\sconnected")
 				{
 					MW.applyIdlePreventionButton.Text = "Apply";
+					Form1.BlinkButton(MW.connectButton, 3, 500, Color.Yellow);
 					return;
 				}
 				ts3.tsClientNickname = ts3.SerializeResponse(response)["client_nickname"];
 				ts3.tsClientNickname = ts3.tsClientNickname + addString;
 				response = await ts3.SendMessageAsync("clientupdate client_nickname=" + ts3.tsClientNickname);
 			}
-			else if (ts3.tsClientNickname.LastIndexOf(addString) == ts3.tsClientNickname.Length - 1)
+			else if (ts3.tsClientNickname.LastIndexOf(addString) == ts3.tsClientNickname.Length - addString.Length)
 			{
 				response = await ts3.SendMessageAsync("clientvariable clid=" + ts3.tsClientId + " client_nickname");
 				if (response.Contains("Exception"))
@@ -66,7 +70,7 @@ namespace IdlePreventer
 					return;
 				}
 				ts3.tsClientNickname = ts3.SerializeResponse(response)["client_nickname"];
-				ts3.tsClientNickname = ts3.tsClientNickname.Remove(ts3.tsClientNickname.Length - 1);
+				ts3.tsClientNickname = ts3.tsClientNickname.Remove(ts3.tsClientNickname.LastIndexOf(addString), addString.Length);
 				response = await ts3.SendMessageAsync("clientupdate client_nickname=" + ts3.tsClientNickname);
 			}
 				
@@ -75,7 +79,7 @@ namespace IdlePreventer
 			{
 				await Task.Delay(loopInterval, canToken);
 				if (!canToken.IsCancellationRequested)
-					nicknameChangeLoopAsync(loopInterval, canToken);
+					nicknameChangeLoopAsync(loopInterval, canToken, addString);
 				else
 					return;
 			}

@@ -47,7 +47,7 @@ namespace IdlePreventer
 			
 			if (applyIdlePreventionButton.Text == "Apply")
 			{
-				
+
 				string[] timeString;
 				TimeSpan time = new TimeSpan();
 				if (typeOfPreventionComboBox.Text == "reconnect" && reconnectUserControl1.checkIfKickedTimeComboBox.Text != string.Empty)
@@ -63,7 +63,7 @@ namespace IdlePreventer
 
 					if (Program.ts3.tsServerConnected == false)
 					{
-						BlinkButton(connectButton, 2, 500, Color.Yellow);
+						BlinkButton(connectButton, 3, 500, Color.Yellow);
 						return;
 					}
 					applyIdlePreventionButton.Text = "Stop";
@@ -83,12 +83,12 @@ namespace IdlePreventer
 
 					if (Program.ts3.tsServerConnected == false)
 					{
-						BlinkButton(connectButton, 2, 500, Color.Yellow);
+						BlinkButton(connectButton, 3, 500, Color.Yellow);
 						return;
 					}
 					applyIdlePreventionButton.Text = "Stop";
 					tokenSource = new CancellationTokenSource();
-					Program.nicknameChangeLoopAsync(time, tokenSource.Token);
+					Program.nicknameChangeLoopAsync(time, tokenSource.Token, nicknameChangeUserControl1.nicknameChangeCharactersTextBox.Text);
 				}
 			}
 			else if (applyIdlePreventionButton.Text == "Stop")
@@ -107,11 +107,13 @@ namespace IdlePreventer
 			{
 				nicknameChangeUserControl1.Visible = false;
 				reconnectUserControl1.Visible = true;
+				Form1.ActiveForm.Height = 226;
 			}
 			else if (typeOfPreventionComboBox.Text == "nickname change")
 			{
 				reconnectUserControl1.Visible = false;
 				nicknameChangeUserControl1.Visible = true;
+				Form1.ActiveForm.Height = 256;
 			}
 		}
 
@@ -159,6 +161,21 @@ namespace IdlePreventer
 				}
 				blinkButtonCalled = false;
 			}
+		}
+
+		public void DeactivateTypeOfPreventionInputs()
+		{
+			typeOfPreventionComboBox.Enabled = false;
+			nicknameChangeUserControl1.changeNicknameTimeComboBox.Enabled = false;
+			nicknameChangeUserControl1.nicknameChangeCharactersTextBox.Enabled = false;
+			reconnectUserControl1.checkIfKickedTimeComboBox.Enabled = false;
+		}
+		public void ActivateTypeOfPreventionInputs()
+		{
+			typeOfPreventionComboBox.Enabled = true;
+			nicknameChangeUserControl1.changeNicknameTimeComboBox.Enabled = true;
+			nicknameChangeUserControl1.nicknameChangeCharactersTextBox.Enabled = true;
+			reconnectUserControl1.checkIfKickedTimeComboBox.Enabled = true;
 		}
 		#endregion
 	}

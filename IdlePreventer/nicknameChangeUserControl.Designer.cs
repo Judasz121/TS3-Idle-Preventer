@@ -30,6 +30,8 @@
 		{
 			this.changeNicknameTimeInfoLabel = new System.Windows.Forms.Label();
 			this.changeNicknameTimeComboBox = new System.Windows.Forms.ComboBox();
+			this.nicknameChangeCharactersLabel = new System.Windows.Forms.Label();
+			this.nicknameChangeCharactersTextBox = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
 			// 
 			// changeNicknameTimeInfoLabel
@@ -63,14 +65,33 @@
 			this.changeNicknameTimeComboBox.Size = new System.Drawing.Size(121, 21);
 			this.changeNicknameTimeComboBox.TabIndex = 1;
 			// 
+			// nicknameChangeCharactersLabel
+			// 
+			this.nicknameChangeCharactersLabel.AutoSize = true;
+			this.nicknameChangeCharactersLabel.Location = new System.Drawing.Point(3, 41);
+			this.nicknameChangeCharactersLabel.Name = "nicknameChangeCharactersLabel";
+			this.nicknameChangeCharactersLabel.Size = new System.Drawing.Size(93, 13);
+			this.nicknameChangeCharactersLabel.TabIndex = 2;
+			this.nicknameChangeCharactersLabel.Text = "characters to add:";
+			// 
+			// nicknameChangeCharactersTextBox
+			// 
+			this.nicknameChangeCharactersTextBox.Location = new System.Drawing.Point(121, 38);
+			this.nicknameChangeCharactersTextBox.Name = "nicknameChangeCharactersTextBox";
+			this.nicknameChangeCharactersTextBox.Size = new System.Drawing.Size(121, 20);
+			this.nicknameChangeCharactersTextBox.TabIndex = 3;
+			this.nicknameChangeCharactersTextBox.Text = ".";
+			// 
 			// nicknameChangeUserControl
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.Controls.Add(this.nicknameChangeCharactersTextBox);
+			this.Controls.Add(this.nicknameChangeCharactersLabel);
 			this.Controls.Add(this.changeNicknameTimeComboBox);
 			this.Controls.Add(this.changeNicknameTimeInfoLabel);
 			this.Name = "nicknameChangeUserControl";
-			this.Size = new System.Drawing.Size(249, 35);
+			this.Size = new System.Drawing.Size(249, 70);
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -80,5 +101,7 @@
 
 		public System.Windows.Forms.Label changeNicknameTimeInfoLabel;
 		public System.Windows.Forms.ComboBox changeNicknameTimeComboBox;
+		public System.Windows.Forms.Label nicknameChangeCharactersLabel;
+		public System.Windows.Forms.TextBox nicknameChangeCharactersTextBox;
 	}
 }
